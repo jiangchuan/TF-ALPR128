@@ -43,7 +43,6 @@ import time
 import cv2
 import numpy
 import tensorflow as tf
-#from tensorflow_serving.session_bundle import exporter
 
 import common
 import gen
@@ -238,25 +237,12 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
         return last_weights
 
 
-    #def save_graph():
-        #export_path = "./GraphPB"
-        #export_version = 1
-        #print 'Exporting trained model to', export_path
-        #saver = tf.train.Saver(sharded=True)
-        #model_exporter = exporter.Exporter(saver)
-        #signature = exporter.classification_signature(input_tensor=x, scores_tensor=y)
-        #model_exporter.init(sess.graph.as_graph_def(), default_graph_signature=signature)
-        #model_exporter.export(export_path, tf.constant(export_version), sess)
-        #print 'Done exporting!'
-
-
     def do_batch():
         sess.run(train_step,
                  feed_dict={x: batch_xs, y_: batch_ys})
         if batch_idx % report_steps == 0:
             do_report()
         if (batch_idx % save_steps == 0 and batch_idx > 0):
-            #save_graph()
             save_weights()
 
 
@@ -285,13 +271,12 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
                         last_batch_time = batch_time
 
         except KeyboardInterrupt:
-            #save_graph()
             return save_weights()
 
 
 if __name__ == "__main__":
     load_initial_weights = True
-    input2 = "./TrainedWeights/weights76779.npz"
+    input2 = "./TrainedWeights/weights92651.npz"
 
     if load_initial_weights:
         f = numpy.load(input2)
@@ -301,7 +286,7 @@ if __name__ == "__main__":
 
     last_weights = train(learn_rate=0.001,
           report_steps=60,
-          save_steps=1,
+          save_steps=5000,
           batch_size=50,
           initial_weights=initial_weights)
 
