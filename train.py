@@ -44,6 +44,10 @@ import cv2
 import numpy
 import tensorflow as tf
 
+from tensorflow.python.client import graph_util
+from tensorflow.python.platform import gfile
+
+
 import common
 import gen
 import model
@@ -229,11 +233,20 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
             r[4],
             r[5])
 
+    def save_graph():
+        # Write out the trained graph and labels with the weights stored as constants.
+        output_graph_def = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), ['final_result'])
+        with gfile.FastGFile('./Graph/output_graph.pb', 'wb') as f:
+            f.write(output_graph_def.SerializeToString())
+
 
     def save_weights():
         print ("Saving weights from batch {:3d} ...").format(batch_idx)
         last_weights = [p.eval() for p in params]
         numpy.savez("./TrainedWeights/weights" + `batch_idx` + ".npz", *last_weights)
+        
+        #tf.train.write_graph(sess.graph_def, "/tmp/load", "test.pb", False) #proto
+
         return last_weights
 
 
@@ -243,6 +256,7 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
         if batch_idx % report_steps == 0:
             do_report()
         if (batch_idx % save_steps == 0 and batch_idx > 0):
+            save_graph()
             save_weights()
 
 
@@ -271,12 +285,13 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
                         last_batch_time = batch_time
 
         except KeyboardInterrupt:
+            save_graph()
             return save_weights()
 
 
 if __name__ == "__main__":
     load_initial_weights = True
-    input2 = "./TrainedWeights/weights92651.npz"
+    input2 = "./TrainedWeights/weights104831.npz"
 
     if load_initial_weights:
         f = numpy.load(input2)
@@ -284,9 +299,9 @@ if __name__ == "__main__":
     else:
         initial_weights = None
 
-    last_weights = train(learn_rate=0.001,
+    last_weights = train(learn_rate=0.001/2,
           report_steps=60,
-          save_steps=5000,
+          save_steps=1,
           batch_size=50,
           initial_weights=initial_weights)
 

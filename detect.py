@@ -193,10 +193,10 @@ def char_probs_to_code(hanzi_probs, letter_probs, char_probs):
 
 
 if __name__ == "__main__":
-    input1 = "./LPImages/UK1.jpg"
+    #input1 = "./LPImages/UK1.jpg"
     #input1 = "./LPImages/car11.bmp"
-    #input1 = "./LPImages/source2.png"
-    input2 = "./TrainedWeights/weights39366.npz"
+    input1 = "./LPImages/source2.png"
+    input2 = "./TrainedWeights/weights104831.npz"
     output1 = "./LPImages/carOut1.jpg"
     
     im = cv2.imread(input1)
