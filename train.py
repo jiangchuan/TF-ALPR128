@@ -244,9 +244,6 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
         print ("Saving weights from batch {:3d} ...").format(batch_idx)
         last_weights = [p.eval() for p in params]
         numpy.savez("./TrainedWeights/weights" + `batch_idx` + ".npz", *last_weights)
-        
-        #tf.train.write_graph(sess.graph_def, "/tmp/load", "test.pb", False) #proto
-
         return last_weights
 
 
@@ -256,7 +253,7 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
         if batch_idx % report_steps == 0:
             do_report()
         if (batch_idx % save_steps == 0 and batch_idx > 0):
-            save_graph()
+            #save_graph()
             save_weights()
 
 
@@ -285,13 +282,13 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
                         last_batch_time = batch_time
 
         except KeyboardInterrupt:
-            save_graph()
+            #save_graph()
             return save_weights()
 
 
 if __name__ == "__main__":
-    load_initial_weights = True
-    input2 = "./TrainedWeights/weights104831.npz"
+    load_initial_weights = True 
+    input2 = "./TrainedWeights/weights114868.npz"
 
     if load_initial_weights:
         f = numpy.load(input2)
@@ -301,7 +298,7 @@ if __name__ == "__main__":
 
     last_weights = train(learn_rate=0.001/2,
           report_steps=60,
-          save_steps=1,
+          save_steps=5000,
           batch_size=50,
           initial_weights=initial_weights)
 

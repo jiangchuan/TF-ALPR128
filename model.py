@@ -28,6 +28,7 @@ Definition of the neural networks.
 __all__ = (
     'get_training_model',
     'get_detect_model',
+    'get_flat_detect_model',
     'WINDOW_SHAPE',
 )
 
@@ -141,7 +142,7 @@ def get_detect_model():
     
     # Fourth layer
     W_fc1 = weight_variable([8 * 32 * 128, 2048])
-    W_conv1 = tf.reshape(W_fc1, [8,  32, 128, 2048])
+    W_conv1 = tf.reshape(W_fc1, [8, 32, 128, 2048])
     b_fc1 = bias_variable([2048])
     h_conv1 = tf.nn.relu(conv2d(conv_layer, W_conv1,
                                 stride=(1, 1), padding="VALID") + b_fc1) 
@@ -153,4 +154,34 @@ def get_detect_model():
     h_conv2 = conv2d(h_conv1, W_conv2) + b_fc2
 
     return (x, h_conv2, conv_vars + [W_fc1, b_fc1, W_fc2, b_fc2])
+
+
+def get_flat_detect_model():
+    """
+    The same as the training model, except it acts on an arbitrarily sized
+    input, and slides the 128x64 window across the image in 8x8 strides.
+
+    The output is of the form `v`, where `v[i, j]` is equivalent to the output
+    of the training model, for the window at coordinates `(8 * i, 4 * j)`.
+
+    """
+    x, conv_layer, conv_vars = convolutional_layers()
+    
+    # Fourth layer
+    W_fc1 = weight_variable([8 * 32 * 128, 2048])
+    W_conv1 = tf.reshape(W_fc1, [8, 32, 128, 2048])
+    b_fc1 = bias_variable([2048])
+    h_conv1 = tf.nn.relu(conv2d(conv_layer, W_conv1,
+                                stride=(1, 1), padding="VALID") + b_fc1) 
+    # Fifth layer
+    numNeuron = 1 + len(common.HANZI) + len(common.LETTERS) + 5 * len(common.CHARS)
+    W_fc2 = weight_variable([2048, numNeuron])
+    W_conv2 = tf.reshape(W_fc2, [1, 1, 2048, numNeuron])
+    b_fc2 = bias_variable([numNeuron])
+    h_conv2 = conv2d(h_conv1, W_conv2) + b_fc2
+    
+    h_conv2_flat = tf.reshape(h_conv2, [-1, numNeuron])
+
+    return (x, h_conv2_flat, conv_vars + [W_fc1, b_fc1, W_fc2, b_fc2])
+
 
