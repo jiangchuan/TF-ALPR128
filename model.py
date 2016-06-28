@@ -72,7 +72,7 @@ def convolutional_layers():
     Get the convolutional layers of the model.
 
     """
-    x = tf.placeholder(tf.float32, [None, None, None])
+    x = tf.placeholder(tf.float32, [None, None, None], name='GreyImageInput')
 
     # First layer
     W_conv1 = weight_variable([5, 5, 1, 48])

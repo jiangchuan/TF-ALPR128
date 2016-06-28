@@ -288,7 +288,7 @@ def train(learn_rate, report_steps, save_steps, batch_size, initial_weights=None
 
 if __name__ == "__main__":
     load_initial_weights = True 
-    input2 = "./TrainedWeights/weights114868.npz"
+    input2 = "./TrainedWeights/weights167359.npz"
 
     if load_initial_weights:
         f = numpy.load(input2)

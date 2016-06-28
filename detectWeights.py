@@ -32,6 +32,7 @@ of `detect` to filter using non-maximum suppression.
 
 __all__ = (
     'detect',
+    'detect_tensor',
 )
 
 
